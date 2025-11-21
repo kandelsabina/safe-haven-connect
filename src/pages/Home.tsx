@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { AlertCircle, Phone, Volume2, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AlertCircle, Phone, Volume2, MessageSquare, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -8,15 +8,48 @@ import BottomNav from "@/components/layout/BottomNav";
 const Home = () => {
   const [isSOSActive, setIsSOSActive] = useState(false);
   const [isAlarmActive, setIsAlarmActive] = useState(false);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationError, setLocationError] = useState<string>("");
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setLocationError("");
+        },
+        (error) => {
+          setLocationError("Unable to get location");
+          console.error("Location error:", error);
+        }
+      );
+    } else {
+      setLocationError("Geolocation not supported");
+    }
+  }, []);
 
   const handleSOS = () => {
     setIsSOSActive(true);
-    toast.error("SOS Activated! Alerting your trusted contacts...", {
-      description: "Your location is being shared",
-      duration: 5000,
-    });
     
-    // Simulate SOS activation
+    if (location) {
+      const locationUrl = `https://www.google.com/maps?q=${location.lat},${location.lng}`;
+      toast.error("SOS Activated! Alerting your trusted contacts...", {
+        description: `Location: ${locationUrl}`,
+        duration: 5000,
+      });
+      
+      // In a real app, this would send SMS/notifications with the location
+      console.log("Sharing location:", locationUrl);
+    } else {
+      toast.error("SOS Activated! Alerting your trusted contacts...", {
+        description: "Unable to share location",
+        duration: 5000,
+      });
+    }
+    
     setTimeout(() => {
       setIsSOSActive(false);
     }, 5000);
@@ -61,6 +94,16 @@ const Home = () => {
             SafeGuard
           </h1>
           <p className="text-muted-foreground mt-1">Your safety companion</p>
+          
+          {/* Location Status */}
+          <div className="mt-3 flex items-center gap-2 text-sm">
+            <MapPin className={`h-4 w-4 ${location ? "text-primary" : "text-muted-foreground"}`} />
+            <span className={location ? "text-primary" : "text-muted-foreground"}>
+              {location 
+                ? `Location: ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}`
+                : locationError || "Getting location..."}
+            </span>
+          </div>
         </div>
 
         {/* Emergency SOS Button */}
