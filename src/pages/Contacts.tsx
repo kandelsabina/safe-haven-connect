@@ -24,8 +24,8 @@ interface Contact {
 
 const Contacts = () => {
   const [contacts, setContacts] = useState<Contact[]>([
-    { id: "1", name: "Mom", phone: "+1 234 567 8901", email: "mom@example.com" },
-    { id: "2", name: "Dad", phone: "+1 234 567 8902", email: "dad@example.com" },
+    { id: "1", name: "Mom", phone: "+977 9841234567", email: "mom@example.com" },
+    { id: "2", name: "Dad", phone: "+977 9851234568", email: "dad@example.com" },
   ]);
   const [isOpen, setIsOpen] = useState(false);
   const [newContact, setNewContact] = useState({ name: "", phone: "", email: "" });
@@ -94,7 +94,7 @@ const Contacts = () => {
                     type="tel"
                     value={newContact.phone}
                     onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
-                    placeholder="+1 234 567 8900"
+                    placeholder="+977 9841234567"
                   />
                 </div>
                 <div>
